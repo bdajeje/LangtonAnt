@@ -16,19 +16,26 @@ MainWindow::MainWindow(QWidget *parent)
   // Widgets
   m_button_run   = new QPushButton;
   m_input_steps  = new QSpinBox;
+  m_input_speed  = new QSpinBox;
   m_progress_bar = new QProgressBar;
-  m_render_area  = new RenderArea(25, 25);
+  m_render_area  = new RenderArea(7, 7);
 
   // Default widgets values
-  m_input_steps->setValue(10);
-  m_input_steps->setRange(1, 1000);
+  m_input_steps->setRange(1, 10000);
+  m_input_steps->setValue(1000);
   m_input_steps->setToolTip("Set how many steps to generate");
   m_input_steps->setPrefix("Number steps: ");
+  m_input_speed->setValue(25);
+  m_input_speed->setRange(1, 1000);
+  m_input_speed->setToolTip("Sleep time between two iterations in milliseconds");
+  m_input_speed->setPrefix("Sleep time: ");
+  m_input_speed->setSuffix(" ms");
   m_button_run->setToolTip("Start / Stop the rendering");
   m_progress_bar->setTextVisible(true);
 
   // Placements
   button_layout->addWidget(m_input_steps);
+  button_layout->addWidget(m_input_speed);
   button_layout->addWidget(m_button_run);
   main_layout->addLayout(button_layout);
   main_layout->addWidget(m_progress_bar);
@@ -39,13 +46,10 @@ MainWindow::MainWindow(QWidget *parent)
 
   // Widget connections
   connect(m_button_run, SIGNAL(pressed()), this, SLOT(toggleRendering()));
-  connect(m_input_steps, SIGNAL(valueChanged(int)), m_progress_bar, SLOT(setMaximum(int)));
 }
 
 void MainWindow::toggleRendering()
 {
-  m_progress_bar->setValue(0);
-
   if(m_rendering_started)
   {
     stopRendering();
@@ -55,7 +59,9 @@ void MainWindow::toggleRendering()
   {
     m_render_area->reset();
     disableUI();
-    render();
+    m_progress_bar->setValue(0);
+    m_progress_bar->setMaximum(m_input_steps->value());
+    render(m_input_speed->value());
   }
 }
 
@@ -76,7 +82,7 @@ void MainWindow::disableUI()
   m_input_steps->setDisabled(true);
 }
 
-void MainWindow::render()
+void MainWindow::render(int sleep_time)
 {
   m_rendering_started = true;
 
@@ -84,7 +90,7 @@ void MainWindow::render()
   for( int step = 0; step < nbr_steps; ++step )
   {
     if(step != 0)
-      QThread::msleep(25);
+      QThread::msleep(sleep_time);
 
     m_progress_bar->setValue(m_progress_bar->value() + 1);
     m_render_area->nextFrame();

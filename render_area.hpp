@@ -27,8 +27,12 @@ struct Direction
   int y {0};
 };
 
+typedef std::vector<std::vector<QColor>> Board;
+
 class RenderArea final : public QWidget
 {
+  Q_OBJECT
+
   public:
 
     RenderArea(unsigned int nbr_cells_x, unsigned int nbr_cells_y, QWidget *parent = 0);
@@ -41,19 +45,27 @@ class RenderArea final : public QWidget
   private:
 
     void paintEvent(QPaintEvent * /* event */);
-    Position antCoordinates() const;
     void setTileColor(const QColor& color, unsigned int x, unsigned int y);
+    unsigned int squareWidth() const;
+    unsigned int squareHeight() const;
+
+    // \todo put private after testing
+    /*! Add specific number of rows and cols around the board
+     * \note this method adds line to the top, bottom, left and right.
+     *       So calling this method with size=1 will add a total of 4 lines
+     */
+    void enlargeBoard();
+
+    static Board createBoard(unsigned int width, unsigned int height);
+    static void fillBoard(Board& board, const QColor& fill_color);
 
   private:
 
     unsigned int m_nbr_cells_x;
     unsigned int m_nbr_cells_y;
+    Board m_board;
     Position m_ant_position;
     Direction m_ant_direction;
-    std::vector<std::vector<QColor>> m_board;
-
-    static constexpr unsigned int m_square_size {20};
-    static constexpr unsigned int m_board_margin {5};
 };
 
 #endif // RENDER_AREA_HPP

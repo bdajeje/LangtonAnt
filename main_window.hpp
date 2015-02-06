@@ -18,7 +18,7 @@ class MainWindow final : public QMainWindow
 
   private:
 
-    void render();
+    void render(int sleep_time);
     void stopRendering();
     void enableUI();
     void disableUI();
@@ -33,6 +33,7 @@ class MainWindow final : public QMainWindow
 
     QPushButton*  m_button_run;
     QSpinBox*     m_input_steps;
+    QSpinBox*     m_input_speed;
     QProgressBar* m_progress_bar;
     RenderArea*   m_render_area;
 };
