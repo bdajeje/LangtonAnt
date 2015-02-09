@@ -18,7 +18,7 @@ class MainWindow final : public QMainWindow
 
   private:
 
-    void render(int sleep_time);
+    void render(int sleep_time, int nbr_steps);
     void stopRendering();
     void enableUI();
     void disableUI();

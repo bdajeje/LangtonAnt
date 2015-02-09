@@ -61,7 +61,7 @@ void MainWindow::toggleRendering()
     disableUI();
     m_progress_bar->setValue(0);
     m_progress_bar->setMaximum(m_input_steps->value());
-    render(m_input_speed->value());
+    render(m_input_speed->value(), m_input_steps->value());
   }
 }
 
@@ -82,11 +82,10 @@ void MainWindow::disableUI()
   m_input_steps->setDisabled(true);
 }
 
-void MainWindow::render(int sleep_time)
+// \todo put this method in another thread so it doesn't block the UI
+void MainWindow::render(int sleep_time, int nbr_steps)
 {
   m_rendering_started = true;
-
-  const auto nbr_steps = m_input_steps->value();
   for( int step = 0; step < nbr_steps; ++step )
   {
     if(step != 0)
@@ -95,5 +94,9 @@ void MainWindow::render(int sleep_time)
     m_progress_bar->setValue(m_progress_bar->value() + 1);
     m_render_area->nextFrame();
     m_render_area->repaint();
+
+    // Does the user want the rendering to stop
+//    if(m_rendering_started)
+//      break;
   }
 }
